@@ -1,1 +1,7 @@
-**/bin/
+.*
+!.gitignore
+bin/
+
+.vscode/
+
+/main
