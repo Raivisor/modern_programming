@@ -5,3 +5,9 @@ bin/
 .vscode/
 
 /main
+
+build_*/
+
+sshkey
+sshkey.pub
+*.swp
