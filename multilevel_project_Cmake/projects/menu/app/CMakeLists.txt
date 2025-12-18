@@ -4,5 +4,5 @@ set(SOURCES
 
 add_executable(menu_app ${SOURCES})
 
-target_link_libraries(menu_app PRIVATE menu_library)
+target_link_libraries(menu_app PRIVATE ${MENU_LIBRARY_NAME})
 

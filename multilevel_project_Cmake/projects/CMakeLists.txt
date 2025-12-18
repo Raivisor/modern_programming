@@ -5,4 +5,5 @@ project(mogger)
 enable_testing()
 
 add_subdirectory(lib/googletest)
+add_subdirectory(menu)
 add_subdirectory(sort)

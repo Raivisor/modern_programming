@@ -3,8 +3,8 @@
 
 #include <cstddef>
 
-namespace mogger{
-    namespace sorting{
+namespace mogger {
+    namespace sorting {
         template<typename RandomAccessIterator>
         void shellSorting(RandomAccessIterator first, RandomAccessIterator last);
     }

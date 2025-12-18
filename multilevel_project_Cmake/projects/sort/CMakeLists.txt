@@ -1,6 +1,8 @@
 project(sort)
 
-add_library(sort_library "")
+set(SORT_LIBRARY_NAME "sort_library")
+
+add_library(${SORT_LIBRARY_NAME} "")
 
 add_subdirectory(include)
 add_subdirectory(src)

@@ -1,4 +1,4 @@
-target_sources(sort_library
+target_sources(${SORT_LIBRARY_NAME}
 	PRIVATE
         generator.cpp
         shellSorting.cpp

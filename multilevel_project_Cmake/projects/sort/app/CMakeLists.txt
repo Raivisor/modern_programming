@@ -4,4 +4,4 @@ set(SOURCES
 
 add_executable(sort_app ${SOURCES})
 
-target_link_libraries(sort_app PRIVATE sort_library)
+target_link_libraries(sort_app PRIVATE ${SORT_LIBRARY_NAME})
