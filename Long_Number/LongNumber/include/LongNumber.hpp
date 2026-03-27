@@ -11,6 +11,7 @@ namespace mogger {
 		
 		public:
 			LongNumber();
+			LongNumber(int number);
 			LongNumber(int length, int sign);
 			LongNumber(const char* const str);
 			LongNumber(const LongNumber& x);
@@ -42,13 +43,12 @@ namespace mogger {
 		private:
 			int get_length(const char* const str) const noexcept;
 			void normalize();
+			void make_null();
 
 			static LongNumber add_abs(const LongNumber& x, const LongNumber& y);
 			static int compare_abs(const LongNumber& x, const LongNumber& y);
 			static LongNumber subtract_abs(const LongNumber& x, const LongNumber& y);
 			static LongNumber multiply_abs(const LongNumber& x, const LongNumber& y);
 			static LongNumber divide_abs(const LongNumber& x, const LongNumber& y);
-			static LongNumber from_digit(const int digit);
-			static LongNumber from_int(const int x);
 	};
 }

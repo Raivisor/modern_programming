@@ -16,6 +16,26 @@ TEST(LongNumberTest, DefaultConstructor) {
     EXPECT_EQ(ss.str(), "0");
 }
 
+TEST(LongNumberTest, ConstructorFromInt) {
+    LongNumber a(0);
+    LongNumber b(15);
+    //LongNumber c(-17);
+
+    std::cerr << "Отработал" << std::endl;
+
+    std::stringstream ss;
+    ss << a;
+    EXPECT_EQ(ss.str(), "0");
+
+    ss.str("");
+    ss << b;
+    EXPECT_EQ(ss.str(), "15");
+
+    // ss.str("");
+    // ss << c;
+    // EXPECT_EQ(ss.str(), "-17");
+}
+
 TEST(LongNumberTest, ConstructorWithLengthAndSign) {
     {
         LongNumber x1(2, 1);

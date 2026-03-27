@@ -1,5 +1,5 @@
 set(SOURCES
-    TestLongNumber.cpp
+    TestPracticum.cpp
 )
 
 add_executable(test_LN ${SOURCES})

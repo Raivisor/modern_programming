@@ -3,133 +3,41 @@
 using mogger::LongNumber;
 
 // ----------------------------------------------------------
-// AUXILIARY FUNCTIONS
-// ----------------------------------------------------------
-LongNumber LongNumber::add_abs(const LongNumber& x, const LongNumber& y) {
-	int max_length = (x.length > y.length) ? x.length : y.length;
-	LongNumber result(max_length + 1, 1);
-
-	int carry = 0;
-	int i;
-	for(i = 0; i < max_length; i++) {
-		int sum = (i < x.length ? x.numbers[i] : 0) \
-				+ (i < y.length ? y.numbers[i] : 0) + carry;
-		result.numbers[i] = sum % 10;
-		carry = sum / 10;
-	}
-
-	if(carry) {
-		result.numbers[i] = carry;
-	}
-	else {
-		result.length = max_length;
-	}
-
-	return result;
-}
-
-int LongNumber::compare_abs(const LongNumber& x, const LongNumber& y) {
-	if(x.length != y.length) return (x.length > y.length) ? 1 : -1;
-
-	for(int i = x.length-1; i >= 0; i--) {
-		if(x.numbers[i] != y.numbers[i]) return (x.numbers[i] > y.numbers[i])\
-		? 1 : -1;
-	}
-
-	return 0;
-}
-
-LongNumber LongNumber::subtract_abs(const LongNumber& x, const LongNumber& y) {
-	LongNumber result(x.length, 1);
-
-	int borrow = 0;
-	for(int i = 0; i < x.length; i++) {
-		int diff = x.numbers[i] - \
-		(i < y.length ? y.numbers[i] : 0) - borrow;
-
-		if(diff < 0) {
-			diff += 10;
-			borrow = 1;
-		} else {
-			borrow = 0;
-		}
-
-		result.numbers[i] = diff;
-	}
-
-	while(result.length > 1 && result.numbers[result.length-1] == 0){
-		result.length--;
-	}
-
-	return result;
-}
-
-LongNumber LongNumber::multiply_abs(const LongNumber& x, const LongNumber& y) {
-	int result_length = x.length + y.length;
-	LongNumber result(result_length, 1);
-
-	for(int i = 0; i < x.length; i++) {
-		int carry = 0;
-		for(int j = 0; j < y.length; j++) {
-			int product = result.numbers[i + j] + x.numbers[i] * y.numbers[j] +\
-			carry;
-			result.numbers[i + j] = product % 10;
-			carry = product / 10;
-		}
-		if(carry) {
-			result.numbers[i + y.length] += carry;
-		}
-	}
-
-	while(result.length > 1 && result.numbers[result.length-1] == 0){
-		result.length--;
-	}
-
-	return result;
-
-}
-
-LongNumber LongNumber::divide_abs(const LongNumber& x, const LongNumber& y) {
-	int result_length = x.length;
-    LongNumber result(result_length, 1);
-    LongNumber remainder(1, 1);
-
-    for(int i = x.length - 1; i >= 0; i--) {
-        remainder = multiply_abs(remainder, from_int(10));
-        remainder = add_abs(remainder, from_digit(x.numbers[i]));
-
-        int digit = 0;
-		LongNumber temp = remainder;
-        while(compare_abs(temp, y) >= 0) {
-			temp = subtract_abs(temp, y);
-			digit++;
-		}
-
-        result.numbers[i] = digit;
-        remainder = temp;
-    }
-
-    while(result.length > 1 && result.numbers[result.length - 1] == 0) {
-        result.length--;
-    }
-    
-    return result;
-}
-
-// ----------------------------------------------------------
 // CONSTRUCTORS
 // ----------------------------------------------------------
 LongNumber::LongNumber() {
-	this->numbers = nullptr;
-	this->length = 0;
-	this->sign = 1;
+	this->make_null();
+}
+
+LongNumber::LongNumber(int number) {
+	if(number < 0) {
+		this->sign = -1;
+		number *= -1;
+    } else {
+		this->sign = 1;
+	}
+    
+    int len = 0;
+    int temp = number;
+    while(temp > 0) {
+        len++;
+        temp /= 10;
+    }
+    
+    this->length = len;
+	this->numbers = new int[length]();
+    temp = number;
+    for(int i = 0; i < len; i++) {
+        this->numbers[i] = temp % 10;
+        temp /= 10;
+    }
+
+	this->normalize();
 }
 
 LongNumber::LongNumber(int length, int sign) {
 	if(length < 0) {
-		this->length = 0;
-		this->sign = 1;
-		this->numbers = nullptr;
+		this->make_null();
 		return;
 	}
 
@@ -142,9 +50,7 @@ LongNumber::LongNumber(int length, int sign) {
 
 LongNumber::LongNumber(const char* const str) {
 	if(str == nullptr) {
-		this->numbers = nullptr;
-		this->length = 0;
-		this->sign = 1;
+		this->make_null();
 		return;
 	}
 
@@ -205,9 +111,7 @@ LongNumber::LongNumber(LongNumber&& x) {
 	this->sign = x.sign;
 	this->numbers = x.numbers;
 
-	x.numbers = nullptr;
-	x.length = 0;
-	x.sign = 1;
+	x.make_null();
 
 	this->normalize();
 }
@@ -224,9 +128,7 @@ LongNumber::~LongNumber() {
 // ----------------------------------------------------------
 LongNumber& LongNumber::operator = (const char* const str) {
 	delete[] numbers;
-	this->numbers = nullptr;
-	this->length = 0;
-	this->sign = 1;
+	this->make_null();
 
 	if(str == nullptr) {
 		return *this;
@@ -254,9 +156,7 @@ LongNumber& LongNumber::operator = (const char* const str) {
 	}
 
 	if(digit_count == 0){
-		this->numbers = nullptr;
-		this->length = 0;
-		this->sign = 1;
+		this->make_null();
 		return *this;
 	}
 
@@ -302,9 +202,7 @@ LongNumber& LongNumber::operator = (LongNumber&& x) {
 	this->sign = x.sign;
 	this->numbers = x.numbers;
 
-	x.numbers = nullptr;
-	x.length = 0;
-	x.sign = 1;
+	x.make_null();
 
 	this->normalize();
 
@@ -420,13 +318,26 @@ LongNumber LongNumber::operator * (const LongNumber& x) const {
 LongNumber LongNumber::operator / (const LongNumber& x) const {
 	if(x.is_zero()) throw std::runtime_error("Division by zero");
 	if(this->is_zero()) return LongNumber();
+	if(x == 1) return *this;
+	if(x == -1) return -(*this);
 
 	LongNumber result = divide_abs(*this, x);
 
 	if(this->sign == x.sign) {
 		result.sign = 1;
+		LongNumber remainder = *this - result*x;
+		if(remainder.is_zero()) return result;
+		if(remainder < 0) {
+			result = result + 1;
+		}
 	} else {
 		result.sign = -1;
+		LongNumber remainder = *this - result*x;
+		if(remainder.is_zero()) return result;
+		if(remainder < 0) {
+			LongNumber add = (*this - (result + 1)*x > 0) ? 1 : -1;
+			result = result + add;
+		}
 	}
 
 	return result;
@@ -477,38 +388,121 @@ void LongNumber::normalize() {
 	if(this->is_zero()) this->sign = 1;
 }
 
-LongNumber LongNumber::from_digit(int digit) {
-    if(digit < 0 || digit > 9) {
-        throw std::invalid_argument("Digit must be 0-9");
-    }
-    LongNumber result(1, 1);
-    result.numbers[0] = digit;
-    return result;
+void LongNumber::make_null() {
+	this->sign = 1;
+	this->length = 0;
+	this->numbers = nullptr;
 }
 
-LongNumber LongNumber::from_int(int x) {
-    if(x < 0) {
-        LongNumber result = from_int(-x);
-        result.sign = -1;
-        return result;
+LongNumber LongNumber::add_abs(const LongNumber& x, const LongNumber& y) {
+	int max_length = (x.length > y.length) ? x.length : y.length;
+	LongNumber result(max_length + 1, 1);
+
+	int carry = 0;
+	int i;
+	for(i = 0; i < max_length; i++) {
+		int sum = (i < x.length ? x.numbers[i] : 0) \
+				+ (i < y.length ? y.numbers[i] : 0) + carry;
+		result.numbers[i] = sum % 10;
+		carry = sum / 10;
+	}
+
+	if(carry) {
+		result.numbers[i] = carry;
+	}
+	else {
+		result.length = max_length;
+	}
+
+	return result;
+}
+
+int LongNumber::compare_abs(const LongNumber& x, const LongNumber& y) {
+	if(x.length != y.length) return (x.length > y.length) ? 1 : -1;
+
+	for(int i = x.length-1; i >= 0; i--) {
+		if(x.numbers[i] != y.numbers[i]) return (x.numbers[i] > y.numbers[i])\
+		? 1 : -1;
+	}
+
+	return 0;
+}
+
+LongNumber LongNumber::subtract_abs(const LongNumber& x, const LongNumber& y) {
+	LongNumber result(x.length, 1);
+
+	int borrow = 0;
+	for(int i = 0; i < x.length; i++) {
+		int diff = x.numbers[i] - \
+		(i < y.length ? y.numbers[i] : 0) - borrow;
+
+		if(diff < 0) {
+			diff += 10;
+			borrow = 1;
+		} else {
+			borrow = 0;
+		}
+
+		result.numbers[i] = diff;
+	}
+
+	while(result.length > 1 && result.numbers[result.length-1] == 0){
+		result.length--;
+	}
+
+	return result;
+}
+
+LongNumber LongNumber::multiply_abs(const LongNumber& x, const LongNumber& y) {
+	int result_length = x.length + y.length;
+	LongNumber result(result_length, 1);
+
+	for(int i = 0; i < x.length; i++) {
+		int carry = 0;
+		for(int j = 0; j < y.length; j++) {
+			int product = 
+				result.numbers[i + j] 
+				+ x.numbers[i] 
+				* y.numbers[j] 
+				+ carry;
+			result.numbers[i + j] = product % 10;
+			carry = product / 10;
+		}
+		if(carry) {
+			result.numbers[i + y.length] += carry;
+		}
+	}
+
+	while(result.length > 1 && result.numbers[result.length-1] == 0){
+		result.length--;
+	}
+
+	return result;
+
+}
+
+LongNumber LongNumber::divide_abs(const LongNumber& x, const LongNumber& y) {
+	int result_length = x.length;
+    LongNumber result(result_length, 1);
+    LongNumber remainder(1, 1);
+
+    for(int i = x.length - 1; i >= 0; i--) {
+        remainder = remainder * 10;
+        remainder = remainder + x.numbers[i];
+
+        int digit = 0;
+		LongNumber temp = remainder;
+        while(compare_abs(temp, y) >= 0) {
+			temp = subtract_abs(temp, y);
+			digit++;
+		}
+
+        result.numbers[i] = digit;
+        remainder = temp;
     }
-    
-    if(x == 0) {
-        return LongNumber();
-    }
-    
-    int len = 0;
-    int temp = x;
-    while(temp > 0) {
-        len++;
-        temp /= 10;
-    }
-    
-    LongNumber result(len, 1);
-    temp = x;
-    for(int i = 0; i < len; i++) {
-        result.numbers[i] = temp % 10;
-        temp /= 10;
+
+    while(result.length > 1 && result.numbers[result.length - 1] == 0) {
+        result.length--;
     }
     
     return result;
