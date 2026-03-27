@@ -1,0 +1,6 @@
+[submodule "Long_Number/lib/googletest"]
+	path = Long_Number/lib/googletest
+	url = https://github.com/google/googletest.git
+[submodule "Vector_List/googletest"]
+	path = Vector_List/googletest
+	url = https://github.com/google/googletest
