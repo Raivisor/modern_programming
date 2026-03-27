@@ -12,3 +12,14 @@ build_*/
 sshkey
 sshkey.pub
 *.swp
+
+# IDE
+.vscode/
+
+# SSH keys
+shhkey
+shhkey.pub
+
+# Temporary files
+training/
+*_practicum_*
