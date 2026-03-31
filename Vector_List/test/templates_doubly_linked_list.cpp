@@ -1,3 +1,8 @@
 #include "doubly_linked_list.hpp"
 
-template class biv::DoublyLinkedList<int>;
+#include <string>
+
+namespace mogger {
+    template class DoublyLinkedList<int>;
+    template class DoublyLinkedList<std::string>;
+}

@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-namespace biv {
+namespace mogger {
 	template <typename T> 
 	class DoublyLinkedList {
 		private:
@@ -32,5 +32,8 @@ namespace biv {
 			void print() const noexcept;
 			void push_back(const T& value);
 			bool remove_first(const T& value) noexcept;
+
+		private:
+			static void insert_between(Node* node, Node* prev, Node* next) noexcept;
 	};
 }
