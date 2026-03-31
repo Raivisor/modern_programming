@@ -9,12 +9,19 @@ int main(int argc, char **argv) {
 	return RUN_ALL_TESTS();
 }
 
+// ----------------------------------------------------------
+// CONSTRUCTOR
+// ----------------------------------------------------------
 
 TEST(VectorConstructorTest, DefaultConstructor) {
 	Vector<int> x;
 
 	EXPECT_EQ(x.get_size(), 0);
 }
+
+// ----------------------------------------------------------
+// INSERT
+// ----------------------------------------------------------
 
 TEST(VectorTest, InsertAtBeginning) {
     Vector<int> v;
@@ -57,6 +64,10 @@ TEST(VectorTest, InsertInvalidPosition) {
     EXPECT_FALSE(v.insert(5, 20));
     EXPECT_EQ(v.get_size(), 1);
 }
+
+// ----------------------------------------------------------
+// PUSH BACK
+// ----------------------------------------------------------
 
 TEST(VectorPushBackTest, SizeOneAndStore) {
     Vector<int> v;
@@ -114,6 +125,10 @@ TEST(VectorPushBackTest, PushBackBeyondInitialCapacity) {
         EXPECT_TRUE(v.has_item(i));
     }
 }
+
+// ----------------------------------------------------------
+// REMOVE FIRST
+// ----------------------------------------------------------
 
 TEST(VectorRemoveFirstTest, RemoveExistingElement) {
     Vector<int> v;
