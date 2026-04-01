@@ -61,3 +61,54 @@ TEST(DoublyLinkedListPushBackTest, PushBackManyElements) {
         EXPECT_TRUE(list.has_item(i));
     }
 }
+
+// ----------------------------------------------------------
+// PRINT
+// ----------------------------------------------------------
+
+TEST(DoublyLinkedListPrintTest, PrintEmptyList) {
+    DoublyLinkedList<int> list;
+    
+    testing::internal::CaptureStdout();
+    list.print();
+    std::string output = testing::internal::GetCapturedStdout();
+    
+    EXPECT_EQ(output, "\n");
+}
+
+TEST(DoublyLinkedListPrintTest, PrintSingleElement) {
+    DoublyLinkedList<int> list;
+    list.push_back(42);
+    
+    testing::internal::CaptureStdout();
+    list.print();
+    std::string output = testing::internal::GetCapturedStdout();
+    
+    EXPECT_EQ(output, "42 \n");
+}
+
+TEST(DoublyLinkedListPrintTest, PrintMultipleElements) {
+    DoublyLinkedList<int> list;
+    list.push_back(10);
+    list.push_back(20);
+    list.push_back(30);
+    
+    testing::internal::CaptureStdout();
+    list.print();
+    std::string output = testing::internal::GetCapturedStdout();
+    
+    EXPECT_EQ(output, "10 20 30 \n");
+}
+
+TEST(DoublyLinkedListPrintTest, PrintWithStrings) {
+    DoublyLinkedList<std::string> list;
+    list.push_back("apple");
+    list.push_back("banana");
+    list.push_back("cherry");
+    
+    testing::internal::CaptureStdout();
+    list.print();
+    std::string output = testing::internal::GetCapturedStdout();
+    
+    EXPECT_EQ(output, "apple banana cherry \n");
+}

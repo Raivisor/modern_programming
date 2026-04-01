@@ -41,7 +41,14 @@ bool DoublyLinkedList<T>::has_item(const T& value) const noexcept {
 
 template<typename T>
 void DoublyLinkedList<T>::print() const noexcept {
+	Node* current = this->begin;
 
+	while(current != nullptr) {
+		std::cout << current->value << " ";
+		current = current->next;
+	}
+
+	std::cout << std::endl;
 }
 
 template<typename T>
