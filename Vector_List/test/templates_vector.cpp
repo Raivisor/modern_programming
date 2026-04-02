@@ -1,6 +1,7 @@
 #include <string>
 
 #include "vector.hpp"
+#include <vector.cpp>
 
 namespace mogger {
     template class Vector<int>;
