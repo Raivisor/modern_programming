@@ -27,5 +27,9 @@ namespace mogger {
 
 		private:
     		T* allocate_and_copy(std::size_t new_capacity);
+			void expand_capacity();
+			void reduce_capacity();
+			void shift_right(std::size_t position);
+			void shift_left(std::size_t position);
 	};
 }

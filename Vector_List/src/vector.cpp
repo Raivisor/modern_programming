@@ -44,21 +44,12 @@ bool Vector<T>::insert(const std::size_t position, const T& value) {
 	}
 
 	if(this->size == this->capacity) {
-		std::size_t new_capacity = this->capacity + 10;
-		T* new_arr = allocate_and_copy(new_capacity);
-
-		delete[] arr;
-
-		this->capacity = new_capacity;
-		this->arr = new_arr;
+		expand_capacity();
 	}
 
-	for(std::size_t i = this->size; i > position; --i) {
-        this->arr[i] = this->arr[i - 1];
-    }
+	shift_right(position);
     
     this->arr[position] = value;
-    
     this->size++;
     
     return true;
@@ -74,21 +65,8 @@ void Vector<T>::print() const noexcept {
 
 template<typename T>
 void Vector<T>::push_back(const T& value) {
-	if(size < capacity) {
-		this->arr[size] = value;
-		this->size++;
-		return;
-	}
-
-	std::size_t new_capacity = this->capacity + 10;
-	T* new_arr = allocate_and_copy(new_capacity);
-
-	new_arr[size] = value;
-
-	delete[] arr;
-
-	this->capacity = new_capacity;
-	this->arr = new_arr;
+	if(size >= capacity) expand_capacity();
+	this->arr[size] = value;
 	this->size++;
 }
 
@@ -99,22 +77,12 @@ bool Vector<T>::remove_first(const T& value) {
 	std::size_t idx = 0;
 	for(; idx < this->size && this->arr[idx] != value; idx++) {}
 
-	for(idx; idx < this->size-1; idx++) {
-		arr[idx] = arr[idx+1];
-	}
+	shift_left(idx);
 
 	this->size--;
 
 	if(this->capacity > START_CAPACITY && this->size < this->capacity / 2) {
-        std::size_t new_capacity = capacity / 2;
-        if(new_capacity < START_CAPACITY) {
-            new_capacity = START_CAPACITY;
-        }
-        
-        T* new_arr = allocate_and_copy(new_capacity);
-        delete[] this->arr;
-        this->arr = new_arr;
-        this->capacity = new_capacity;
+        reduce_capacity();
     }
 
 	return true;
@@ -135,6 +103,40 @@ T* Vector<T>::allocate_and_copy(std::size_t new_capacity) {
     return new_arr;
 }
 
-template class mogger::Vector<int>;
-template class mogger::Vector<double>;
-template class mogger::Vector<std::string>;
+template<typename T>
+void Vector<T>::expand_capacity() {
+	std::size_t new_capacity = this->capacity + 10;
+	T* new_arr = allocate_and_copy(new_capacity);
+
+	delete[] arr;
+
+	this->capacity = new_capacity;
+	this->arr = new_arr;
+}
+
+template<typename T>
+void Vector<T>::reduce_capacity() {
+	std::size_t new_capacity = this->capacity / 2;
+        if(new_capacity < START_CAPACITY) {
+            new_capacity = START_CAPACITY;
+        }
+        
+        T* new_arr = allocate_and_copy(new_capacity);
+        delete[] this->arr;
+        this->arr = new_arr;
+        this->capacity = new_capacity;
+}
+
+template<typename T>
+void Vector<T>::shift_right(std::size_t position) {
+	for(std::size_t i = this->size; i > position; --i) {
+        this->arr[i] = this->arr[i - 1];
+    }
+}
+
+template<typename T>
+void Vector<T>::shift_left(std::size_t position) {
+	for(std::size_t idx = position; idx < this->size-1; idx++) {
+		arr[idx] = arr[idx+1];
+	}
+}
