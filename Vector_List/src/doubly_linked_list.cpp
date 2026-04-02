@@ -66,11 +66,21 @@ void DoublyLinkedList<T>::push_back(const T& value) {
 
 template<typename T>
 bool DoublyLinkedList<T>::remove_first(const T& value) noexcept {
-
+	Node* current = this->begin;
+    
+    while(current != nullptr) {
+        if(current->value == value) {
+            remove_between(current);
+            return true;
+        }
+        current = current->next;
+    }
+    
+    return false;
 }
 
 template<typename T>
-void DoublyLinkedList<T>::insert_between(Node* node, Node* prev, Node* next) noexcept{
+void DoublyLinkedList<T>::insert_between(Node* node, Node* prev, Node* next) noexcept {
 	node->prev = prev;
     node->next = next;
     
@@ -82,6 +92,22 @@ void DoublyLinkedList<T>::insert_between(Node* node, Node* prev, Node* next) noe
     }
 }
 
-template class mogger::DoublyLinkedList<int>;
-template class mogger::DoublyLinkedList<double>;
-template class mogger::DoublyLinkedList<std::string>;
+template<typename T>
+void DoublyLinkedList<T>::remove_between(Node* node) noexcept {
+    Node* prev = node->prev;
+    Node* next = node->next;
+    
+    if(prev != nullptr) {
+        prev->next = next;
+    } else {
+        begin = next;
+    }
+    
+    if(next != nullptr) {
+        next->prev = prev;
+    } else {
+        end = prev;
+    }
+    
+    delete node;
+}

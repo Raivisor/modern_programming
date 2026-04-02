@@ -35,5 +35,6 @@ namespace mogger {
 
 		private:
 			static void insert_between(Node* node, Node* prev, Node* next) noexcept;
+			void remove_between(Node* node) noexcept;
 	};
 }
