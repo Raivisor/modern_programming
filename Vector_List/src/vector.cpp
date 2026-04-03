@@ -65,7 +65,7 @@ void Vector<T>::print() const noexcept {
 
 template<typename T>
 void Vector<T>::push_back(const T& value) {
-	if(size >= capacity) expand_capacity();
+	if(this->size >= this->capacity) expand_capacity();
 	this->arr[size] = value;
 	this->size++;
 }
@@ -81,7 +81,7 @@ bool Vector<T>::remove_first(const T& value) {
 
 	this->size--;
 
-	if(this->capacity > START_CAPACITY && this->size < this->capacity / 2) {
+	if(this->capacity > this->START_CAPACITY && this->size < this->capacity / 2) {
         reduce_capacity();
     }
 
@@ -108,7 +108,7 @@ void Vector<T>::expand_capacity() {
 	std::size_t new_capacity = this->capacity + 10;
 	T* new_arr = allocate_and_copy(new_capacity);
 
-	delete[] arr;
+	delete[] this->arr;
 
 	this->capacity = new_capacity;
 	this->arr = new_arr;
@@ -137,6 +137,6 @@ void Vector<T>::shift_right(std::size_t position) {
 template<typename T>
 void Vector<T>::shift_left(std::size_t position) {
 	for(std::size_t idx = position; idx < this->size-1; idx++) {
-		arr[idx] = arr[idx+1];
+		this->arr[idx] = this->arr[idx+1];
 	}
 }
