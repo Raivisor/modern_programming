@@ -3,8 +3,14 @@
 #include <ncurses.h>
 #include <cstring>
 
-#define mapWidth 195
-#define mapHeight 50
+#define MAP_WIDTH 195
+#define MAP_HEIGHT 50
+#define ABS_SPEED 0.5
+#define VERTICAL_SPEED 1
+#define KEY_A 97
+#define KEY_D 100
+#define ESC 27
+#define SPACE 32
 
 struct Object {
 	float x, y;
@@ -13,16 +19,17 @@ struct Object {
 	bool IsFly;
 };
 
-char map[mapHeight][mapWidth+1];
+char map[MAP_HEIGHT][MAP_WIDTH+1];
 Object mario;
-Object brick[1];
+Object *brick = nullptr;
+int brickLength;
 
 void ClearMap() {
-	for(int i = 0; i < mapWidth; i++){
+	for(int i = 0; i < MAP_WIDTH; i++){
 		map[0][i] = '.';
 	}
-	map[0][mapWidth] = '\0';
-	for(int i = 1; i < mapHeight; i++){
+	map[0][MAP_WIDTH] = '\0';
+	for(int i = 1; i < MAP_HEIGHT; i++){
 		strcpy(map[i], map[0]);
 	}
 }
@@ -30,7 +37,7 @@ void ClearMap() {
 void ShowMap() {
 	clear();
 
-	for(int i = 0; i < mapHeight; i++) {
+	for(int i = 0; i < MAP_HEIGHT; i++) {
 		printw("%s\n", map[i]);
 	}
 
@@ -38,7 +45,7 @@ void ShowMap() {
 }
 
 bool IsOnMap(int x, int y) {
-	return ((x >= 0) && (x < mapWidth) && (y >= 0) && (y < mapHeight));
+	return ((x >= 0) && (x < MAP_WIDTH) && (y >= 0) && (y < MAP_HEIGHT));
 }
 
 void SetPosition(Object* obj, float xPos, float yPos) {
@@ -76,11 +83,39 @@ void MoveObjectVertical(Object* obj) {
 	obj->IsFly = true;
 	obj->vertSpeed += 0.05;
 	SetPosition(obj, obj->x, obj->y + obj->vertSpeed);
-	if(IsCollision(*obj, brick[0])) {
-		obj->IsFly = false;
-		obj->y -= obj->vertSpeed;
-		obj->vertSpeed = 0;
+	for(int i = 0; i < brickLength; i++) {
+		if(IsCollision(*obj, brick[i])) {
+			obj->IsFly = false;
+			obj->y -= obj->vertSpeed;
+			obj->vertSpeed = 0;
+			break;
+		}
 	}
+}
+
+void MoveMapHorizontal(float dx) {
+	mario.x -= dx;
+	for(int i = 0; i < brickLength; i++) {
+		if(IsCollision(mario, brick[i])) {
+			mario.x += dx;
+			return;
+		}
+	}
+	mario.x += dx;
+	for(int i = 0; i < brickLength; i++) {
+		brick[i].x += dx;
+	}
+}
+
+void CreateLevel() {
+	InitObj(&mario, 39, 10, 3, 3);
+	brickLength = 5;
+	brick = (Object*)malloc( sizeof(*brick) * brickLength);
+	InitObj(brick+0, 20, 20, 40, 5);
+	InitObj(brick+1, 60, 15, 10, 10);
+	InitObj(brick+2, 80, 20, 20, 5);
+	InitObj(brick+3, 120, 15, 10, 10);
+	InitObj(brick+4, 150, 20, 40, 5);
 }
 
 void InitNcurses() {
@@ -95,27 +130,34 @@ void InitNcurses() {
 int main() {
 	InitNcurses();
 	
-	InitObj(&mario, 10, 20, 3, 3);
-	InitObj(brick, 5, 30, 40, 5);
-	
-	char ch;
+	CreateLevel();
+
+	int ch;
+	float speed = 0;
 	do {
 		ch = getch();
 
 		ClearMap();
 
 		PutObjectOnMap(&mario);
-		PutObjectOnMap(&brick[0]);
-		
-		if((!mario.IsFly) && ch == 32) mario.vertSpeed -= 1;
+		for(int i = 0; i < brickLength; i++) {
+			PutObjectOnMap(&brick[i]);
+		}
+
+		if(ch == KEY_A && speed < ABS_SPEED) speed += ABS_SPEED;
+		if(ch == KEY_D && speed > -ABS_SPEED) speed -= ABS_SPEED;
+		if(ch == SPACE && !mario.IsFly) mario.vertSpeed -= VERTICAL_SPEED;
+
+		MoveMapHorizontal(speed);
 
 		MoveObjectVertical(&mario);
 		
 		ShowMap();
 		
-		timeout(15);
-	} while(ch != 27);
+		napms(13);
+	} while(ch != ESC);
 
 	endwin();
+	free(brick);
 	return 0;
 }
