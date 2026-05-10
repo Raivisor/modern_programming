@@ -19,6 +19,13 @@
 #define MAX_LEVEL 3
 #define COIN_SCORE 100
 #define ENEMY_SCORE 50
+#define BLOCK_WALL '#'
+#define BLOCK_QUESTION '?'
+#define BLOCK_DASH '-'
+#define BLOCK_DOOR '+'
+#define ENEMY_TYPE 'o'
+#define COIN_TYPE '$'
+#define PLAYER_TYPE '@'
 
 struct Object {
 	float x, y;
@@ -35,38 +42,63 @@ struct Brick {
 	char type;
 };
 
+struct Enemy {
+    float x, y;
+    float width, height;
+    char type;
+    float speed;
+};
+
 Brick level1Brick[] = {
-	{20, 20,  40, 5, '#'},
-	{100, 20, 20, 5, '#'},
-	{120, 15, 10, 10, '#'},
-	{150, 20, 40, 5, '#'},
-	{60, 15,  40, 10, '#'},
+	{20, 20,  40, 5, BLOCK_WALL},
+	{100, 20, 20, 5, BLOCK_WALL},
+	{120, 15, 10, 10, BLOCK_WALL},
+	{150, 20, 40, 5, BLOCK_WALL},
+	{60, 15,  40, 10, BLOCK_WALL},
 
-	{30, 10,  5, 3, '?'},
-	{50, 10,  5, 3, '?'},
-	{60, 5,  10, 3, '-'},
-	{70, 5,  5, 3, '?'},
-	{75, 5,  5, 3, '-'},
-	{80, 5,  5, 3, '?'},
-	{85, 5,  10, 3, '-'},
+	{30, 10,  5, 3, BLOCK_QUESTION},
+	{50, 10,  5, 3, BLOCK_QUESTION},
+	{60, 5,  10, 3, BLOCK_DASH},
+	{70, 5,  5, 3, BLOCK_QUESTION},
+	{75, 5,  5, 3, BLOCK_DASH},
+	{80, 5,  5, 3, BLOCK_QUESTION},
+	{85, 5,  10, 3, BLOCK_DASH},
 
-	{210, 15, 10, 10, '+'}
+	{210, 15, 10, 10, BLOCK_DOOR}
 };
 
 Brick level2Brick[] = {
-	{20, 20,  40, 5, '#'},
-	{60, 15,  10, 10, '#'},
-	{80, 20, 20, 5, '#'},
-	{120, 15, 10, 10, '#'},
-	{150, 20, 40, 5, '#'},
-	{210, 15, 10, 10, '+'},
+	{20, 20,  40, 5, BLOCK_WALL},
+	{60, 15,  10, 10, BLOCK_WALL},
+	{80, 20, 20, 5, BLOCK_WALL},
+	{120, 15, 10, 10, BLOCK_WALL},
+	{150, 20, 40, 5, BLOCK_WALL},
+	{210, 15, 10, 10, BLOCK_DOOR},
 };
 
 Brick level3Brick[] = {
-	{20, 20,  40, 5, '#'},
-	{80, 20,  15, 5, '#'},
-	{120, 15, 15, 10, '#'},
-	{160, 10, 15, 15, '+'},
+	{20, 20,  40, 5, BLOCK_WALL},
+	{80, 20,  15, 5, BLOCK_WALL},
+	{120, 15, 15, 10, BLOCK_WALL},
+	{160, 10, 15, 15, BLOCK_DOOR},
+};
+
+Enemy level2Enemies[] = {
+    {25, 10, 3, 2, ENEMY_TYPE, ENEMY_SPEED},
+    {80, 10, 3, 2, ENEMY_TYPE, ENEMY_SPEED},
+    {65, 10, 3, 2, ENEMY_TYPE, ENEMY_SPEED},
+    {120, 10, 3, 2, ENEMY_TYPE, ENEMY_SPEED},
+    {160, 10, 3, 2, ENEMY_TYPE, ENEMY_SPEED},
+    {175, 10, 3, 2, ENEMY_TYPE, ENEMY_SPEED}
+};
+
+Enemy level3Enemies[] = {
+    {25, 10, 3, 2, ENEMY_TYPE, ENEMY_SPEED},
+    {50, 10, 3, 2, ENEMY_TYPE, ENEMY_SPEED},
+    {80, 10, 3, 2, ENEMY_TYPE, ENEMY_SPEED},
+    {90, 10, 3, 2, ENEMY_TYPE, ENEMY_SPEED},
+    {120, 10, 3, 2, ENEMY_TYPE, ENEMY_SPEED},
+    {130, 10, 3, 2, ENEMY_TYPE, ENEMY_SPEED}
 };
 
 char map[MAP_HEIGHT][MAP_WIDTH+1];
@@ -177,6 +209,18 @@ void LoadBrick(Brick *bricks, int count){
 	}
 }
 
+void LoadEnemies(Enemy *enemies, int count) {
+    for(int i = 0; i < count; i++) {
+        InitObj(GetNewEnemy(), 
+                enemies[i].x, 
+                enemies[i].y, 
+                enemies[i].type, 
+                enemies[i].width, 
+                enemies[i].height, 
+                enemies[i].speed);
+    }
+}
+
 void CreateLevel(int level) {
 	brickCount = 0;
 	brick = (Object*)realloc(brick, 0);
@@ -185,40 +229,28 @@ void CreateLevel(int level) {
 	coinCount = 0;
 	coin = (Object*)realloc(coin, 0);
 
-	InitObj(&mario, 39, 10, '@', 3, 3, ABS_SPEED);
+	InitObj(&mario, 39, 10, PLAYER_TYPE, 3, 3, ABS_SPEED);
 	score = 0;
 
 	if(level == 1) {
 		LoadBrick(level1Brick, sizeof(level1Brick)/sizeof(level1Brick[0]));
 	} else if(level == 2) {
 		LoadBrick(level2Brick, sizeof(level2Brick)/sizeof(level2Brick[0]));
-		
-		InitObj(GetNewEnemy(), 25, 10, 'o', 3, 2, ENEMY_SPEED);
-		InitObj(GetNewEnemy(), 80, 10, 'o', 3, 2, ENEMY_SPEED);
-		InitObj(GetNewEnemy(), 65, 10, 'o', 3, 2, ENEMY_SPEED);
-		InitObj(GetNewEnemy(), 120, 10, 'o', 3, 2, ENEMY_SPEED);
-		InitObj(GetNewEnemy(), 160, 10, 'o', 3, 2, ENEMY_SPEED);
-		InitObj(GetNewEnemy(), 175, 10, 'o', 3, 2, ENEMY_SPEED);
+		LoadEnemies(level2Enemies, sizeof(level2Enemies)/sizeof(level2Enemies[0]));
 	}
 	else if(level == 3) {
 		LoadBrick(level3Brick, sizeof(level3Brick)/sizeof(level3Brick[0]));
-		
-		InitObj(GetNewEnemy(), 25, 10, 'o', 3, 2, ENEMY_SPEED);
-		InitObj(GetNewEnemy(), 50, 10, 'o', 3, 2, ENEMY_SPEED);
-		InitObj(GetNewEnemy(), 80, 10, 'o', 3, 2, ENEMY_SPEED);
-		InitObj(GetNewEnemy(), 90, 10, 'o', 3, 2, ENEMY_SPEED);
-		InitObj(GetNewEnemy(), 120, 10, 'o', 3, 2, ENEMY_SPEED);
-		InitObj(GetNewEnemy(), 130, 10, 'o', 3, 2, ENEMY_SPEED);
+		LoadEnemies(level3Enemies, sizeof(level3Enemies)/sizeof(level3Enemies[0]));
 	}
 }
 
 void PutObjectOnMap(Object* obj) {
 	int x = round(obj->x);
 	int y = round(obj->y);
-	int Width = round(obj->width);
-	int Height = round(obj->height);
-	for(int i = x; i < (x + Width); i++) {
-		for(int j = y; j < (y + Height); j++) {
+	int width = round(obj->width);
+	int height = round(obj->height);
+	for(int i = x; i < (x + width); i++) {
+		for(int j = y; j < (y + height); j++) {
 			if(IsOnMap(i, j)) map[j][i] = obj->type;
 		}
 	}
@@ -262,15 +294,15 @@ void MoveObjectVertical(Object* obj) {
 				obj->IsFly = false;
 			}
 
-			if((brick[i].type == '?') && obj->verticalSpeed < 0 && obj == &mario) {
-				brick[i].type = '-';
-				InitObj(GetNewCoin(), brick[i].x, brick[i].y-3, '$', 3, 2, COIN_SPEED);
+			if((brick[i].type == BLOCK_QUESTION) && obj->verticalSpeed < 0 && obj == &mario) {
+				brick[i].type = BLOCK_DASH;
+				InitObj(GetNewCoin(), brick[i].x, brick[i].y-3, COIN_TYPE, 3, 2, COIN_SPEED);
 				coin[coinCount - 1].verticalSpeed -= COIN_JUMP_FORCE;
 			}
 
 			obj->y -= obj->verticalSpeed;
 			obj->verticalSpeed = 0;
-			if(brick[i].type == '+') {
+			if(brick[i].type == BLOCK_DOOR) {
 				level++;
 				if(level > MAX_LEVEL) level = 1;
 				PlayerDead();
@@ -291,7 +323,7 @@ void MoveObjectHorizontal(Object* obj) {
 		}
 	}
 
-	if(obj->type == 'o') {
+	if(obj->type == ENEMY_TYPE) {
 		Object tmp = *obj;
 		MoveObjectVertical(&tmp);
 		if(tmp.IsFly) {
