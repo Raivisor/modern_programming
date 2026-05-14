@@ -2,10 +2,8 @@
 
 #include <cstdlib>
 
-void level::LoadBrick(const types::Brick* levelBrick,
-		      const int count,
-		      types::Object** brick,
-		      int* brickCount) {
+void level::LoadBrick(const types::Brick* levelBrick, const int count,
+		      types::Object** brick, int* brickCount) {
 	for(int i = 0; i < count; i++) {
 		objects::InitObj(objects::GetNewBrick(brickCount, brick),
 				 levelBrick[i].x,
@@ -16,10 +14,8 @@ void level::LoadBrick(const types::Brick* levelBrick,
 	}
 }
 
-void level::LoadEnemy(const types::Enemy* enemies, 
-		      const int count,
-		      types::Object** enemy,
-		      int* enemyCount) {
+void level::LoadEnemy(const types::Enemy* enemies, const int count,
+		      types::Object** enemy, int* enemyCount) {
 	for(int i = 0; i < count; i++) {
 		objects::InitObj(objects::GetNewEnemy(enemyCount, enemy),
 				 enemies[i].x,
@@ -31,48 +27,30 @@ void level::LoadEnemy(const types::Enemy* enemies,
 	}
 }
 
-void level::CreateLevel(const int level,
-		 int* score,
-		 types::Object** brick,
-		 int* brickCount,
-		 types::Object** enemy,
-		 int* enemyCount,
-		 types::Object** coin,
-		 int* coinCount,
-		 types::Object* mario) {
-	(*brickCount) = 0;
-	(*brick) = (types::Object*)realloc((*brick), 0);
-	(*enemyCount) = 0;
-	(*enemy) = (types::Object*)realloc((*enemy), 0);
-	(*coinCount) = 0;
-	(*coin) = (types::Object*)realloc((*coin), 0);
+void level::CreateLevel(GameContext::Context* ctx) {
+	ctx->brickCount = 0;
+	ctx->brick = (types::Object*)realloc(ctx->brick, 0);
+	ctx->enemyCount = 0;
+	ctx->enemy = (types::Object*)realloc(ctx->enemy, 0);
+	ctx->coinCount = 0;
+	ctx->coin = (types::Object*)realloc(ctx->coin, 0);
 
-	objects::InitObj(&mario, 39, 10, PLAYER_TYPE, 3, 3, ABS_SPEED);
-	(*score) = 0;
+	objects::InitObj(&ctx->mario, 39, 10, PLAYER_TYPE, 3, 3, ABS_SPEED);
+	ctx->score = 0;
 
-	if(level == 1) {
-		level::LoadBrick(data::level1Brick,
-			  sizeof(data::level1Brick)/sizeof(data::level1Brick[0]),
-			  brick,
-			  brickCount);
-	} else if(level == 2) {
-		level::LoadBrick(data::level2Brick,
-				 sizeof(data::level2Brick)/sizeof(data::level2Brick[0]),
-				 brick,
-				 brickCount);
-		level::LoadEnemy(data::level2Enemies, 
-				   sizeof(data::level2Enemies)/sizeof(data::level2Enemies[0]),
-				   enemy,
-				   enemyCount);
-	} else if(level == 3) {
-		level::LoadBrick(data::level3Brick,
-				 sizeof(data::level3Brick)/sizeof(data::level3Brick[0]),
-				 brick,
-				 brickCount);
-		level::LoadEnemy(data::level3Enemies, 
-				   sizeof(data::level3Enemies)/sizeof(data::level3Enemies[0]),
-				   enemy,
-				   enemyCount);
+	if(ctx->level == 1) {
+		level::LoadBrick(data::level1Brick, data::level1BrickSize,
+			  	 &ctx->brick, &ctx->brickCount);
+	} else if(ctx->level == 2) {
+		level::LoadBrick(data::level2Brick, data::level2BrickSize,	
+				 &ctx->brick, &ctx->brickCount);
+		level::LoadEnemy(data::level2Enemies, data::level2EnemiesSize, 
+				 &ctx->enemy, &ctx->enemyCount);
+	} else if(ctx->level == 3) {
+		level::LoadBrick(data::level3Brick, data::level3BrickSize, 
+				 &ctx->brick, &ctx->brickCount);
+		level::LoadEnemy(data::level3Enemies, data::level3EnemiesSize, 
+				   &ctx->enemy, &ctx->enemyCount);
 
 	}
 }

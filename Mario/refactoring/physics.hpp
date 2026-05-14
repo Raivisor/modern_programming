@@ -1,32 +1,15 @@
 #pragma once
 
-#include "types.hpp"
-#include "constants.hpp"
-#include "objects.hpp"
 #include "collision.hpp"
+#include "constants.hpp"
+#include "gameContext.hpp"
+#include "objects.hpp"
+#include "types.hpp"
 
 namespace physics {
 	void ApplyGravity(types::Object* obj);
 
-	void MoveObjectVertical(int* level,
-				int* score,
-				types::Object* obj,
-				types::Object** brick,
-				int* brickCount,
-				types::Object** enemy,
-				int* enemyCount,
-				types::Object** coin,
-				int* coinCount,
-				types::Object* mario);
+	void MoveObjectVertical(GameContext::Context* ctx, types::Object* obj);
 
-	void MoveObjectHorizontal(int* level,
-				  int* score,
-				  types::Object* obj, 
-				  types::Object** brick, 
-				  int* brickCount,
-				  types::Object** enemy,
-				  int* enemyCount,
-				  types::Object** coin,
-				  int* coinCount,
-				  types::Object* mario);
+	void MoveObjectHorizontal(GameContext::Context* ctx, types::Object* obj);
 }

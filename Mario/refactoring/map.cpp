@@ -24,7 +24,7 @@ void map::ShowMap(char map[MAP_HEIGHT][MAP_WIDTH+1]) {
 
 void map::PutScoreOnMap(char map[MAP_HEIGHT][MAP_WIDTH+1], const int score) {
 	char c[30];
-	sprintf(c, "Score: %d", *score);
+	sprintf(c, "Score: %d", score);
 	int len = strlen(c);
 	for(int i = 0; i < len; i++) {
 		map[1][i + 5] = c[i];
@@ -47,73 +47,43 @@ void map::PutObjectOnMap(char map[MAP_HEIGHT][MAP_WIDTH+1], types::Object* obj) 
 	}
 }
 
-void map::MoveMapHorizontal(const float dx,
-			    types::Object* mario,
-			    types::Object** brick, const int* brickCount,
-			    types::Object** enemy, const int* enemyCount,
-			    types::Object** coin, const int* coinCount) {
-	mario->x -= dx;
-	for(int i = 0; i < *brickCount; i++) {
-		if(collision::IsCollision(*mario, (*brick)[i])) {
-			mario->x += dx;
+void map::MoveMapHorizontal(GameContext::Context* ctx) {
+	ctx->mario.x -= ctx->speed;
+	for(int i = 0; i < ctx->brickCount; i++) {
+		if(collision::IsCollision(ctx->mario, ctx->brick[i])) {
+			ctx->mario.x += ctx->speed;
 			return;
 		}
 	}
-	mario->x += dx;
-	for(int i = 0; i < *brickCount; i++) (*brick)[i].x += dx;
-	for(int i = 0; i < *enemyCount; i++) (*enemy)[i].x += dx;
-	for(int i = 0; i < *coinCount; i++) (*coin)[i].x += dx;
+	ctx->mario.x += ctx->speed;
+	for(int i = 0; i < ctx->brickCount; i++) ctx->brick[i].x += ctx->speed;
+	for(int i = 0; i < ctx->enemyCount; i++) ctx->enemy[i].x += ctx->speed;
+	for(int i = 0; i < ctx->coinCount; i++) ctx->coin[i].x += ctx->speed;
 }
 
-void map::RenderMap(char map[MAP_HEIGHT][MAP_WIDTH+1],
-	       int* level, int* score,
-	       const types::Object** brick, const int* brickCount, 
-	       const types::Object** enemy, const int* enemyCount,
-	       const types::Object** coin, const int* coinCount,
-	       const types::Object* mario) {
-	map::ClearMap(map);
-	map::PutScoreOnMap(map, *score);
-	map::PutObjectOnMap(map, mario);
+void map::RenderMap(GameContext::Context* ctx) {
+	map::ClearMap(ctx->map);
+	map::PutScoreOnMap(ctx->map, ctx->score);
+	map::PutObjectOnMap(ctx->map, &ctx->mario);
 
-	for(int i = 0; i < *brickCount; i++) {
-		map::PutObjectOnMap(map, (*brick) + i);
+	for(int i = 0; i < ctx->brickCount; i++) {
+		map::PutObjectOnMap(ctx->map, ctx->brick + i);
 	}
 	
-	for(int i = 0; i < *enemyCount; i++) {
-		physics::MoveObjectVertical(level, score,
-					    (*enemy) + i,
-					    brick, brickCount,
-					    enemy, enemyCount,
-					    coin, coinCount,
-					    mario);
-		physics::MoveObjectHorizontal(level,
-					      score,
-					      (*enemy) + i,
-					      brick, brickCount,
-					      enemy, enemyCount,
-					      coin, coinCount,
-					      mario);
-		map::PutObjectOnMap((*enemy) + i);
+	for(int i = 0; i < ctx->enemyCount; i++) {
+		physics::MoveObjectVertical(ctx, &ctx->enemy[i]);
+		physics::MoveObjectHorizontal(ctx, &ctx->enemy[i]);
+		map::PutObjectOnMap(ctx->map, ctx->enemy + i);
 	}
-	for(int i = 0; i < *coinCount; i++) {
-		physics::MoveObjectVertical(level, score,
-					    (*coin) + i,
-					    brick, brickCount,
-					    enemy, enemyCount,
-					    coin, coinCount,
-					    mario);
-		physics::MoveObjectHorizontal(level, score,
-					      (*coin) + i,
-					      brick, brickCount,
-					      enemy, enemyCount,
-					      coin, coinCount,
-					      mario);
-		if((*coin)[i].y > MAP_HEIGHT) {
-			collision::DeleteCoin(coinCount, coin, i);
+	for(int i = 0; i < ctx->coinCount; i++) {
+		physics::MoveObjectVertical(ctx, &ctx->coin[i]);
+		physics::MoveObjectHorizontal(ctx, &ctx->coin[i]);
+		if(ctx->coin[i].y > MAP_HEIGHT) {
+			collision::DeleteCoin(&ctx->coinCount, &ctx->coin, i);
 			i--;
 			continue;
 		}
-		map::PutObjectOnMap((*coin) + i);
+		map::PutObjectOnMap(ctx->map, ctx->coin + i);
 	}
-	map::ShowMap(map);
+	map::ShowMap(ctx->map);
 }

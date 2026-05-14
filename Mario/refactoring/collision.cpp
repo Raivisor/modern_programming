@@ -1,4 +1,6 @@
 #include "collision.hpp"
+
+#include <cstdlib>
 #include <ncurses.h>
 
 void collision::DeleteEnemy(int* enemyCount, types::Object** enemy, int i) {
@@ -20,54 +22,30 @@ bool collision::IsCollision(const types::Object& obj1, const types::Object& obj2
 		(obj1.y < (obj2.y + obj2.height)));
 }
 
-void collision::PlayerDead(const int level,
-			   int* score,
-			   types::Object** brick,
-			   int* brickCount,
-			   types::Object** enemy,
-			   int* enemyCount,
-			   types::Object** coin,
-			   int* coinCount,
-			   types::Object* mario) {
+void collision::PlayerDead(GameContext::Context* ctx) {
 	napms(100);
-	level::CreateLevel(level, score,
-			   brick, brickCount, 
-			   enemy, enemyCount,
-			   coin, coinCount,
-			   mario);
+	level::CreateLevel(ctx);
 }
 
-void collision::MarioCollision(const int level,
-		    int* score,
-		    types::Object** brick,
-		    int* brickCount,
-		    types::Object** enemy,
-		    int* enemyCount,
-		    types::Object** coin,
-		    int* coinCount,
-		    types::Object* mario) {
-	for(int i = 0; i < (*enemyCount); i++) {
-		if(collision::IsCollision((*mario), (*enemy)[i])) {
-			if((*mario).IsFly &&
-			   (*mario).verticalSpeed > 0 &&
-			   (*mario).y + (*mario).height < (*enemy)[i].y + (*enemy)[i].height*0.5) {
-				collision::DeleteEnemy(enemyCount, enemy, i);
-				(*score) += ENEMY_SCORE;
+void collision::MarioCollision(GameContext::Context* ctx) {
+	for(int i = 0; i < ctx->enemyCount; i++) {
+		if(collision::IsCollision(ctx->mario, ctx->enemy[i])) {
+			if(ctx->mario.IsFly &&
+			   ctx->mario.verticalSpeed > 0 &&
+			   ctx->mario.y + ctx->mario.height < ctx->enemy[i].y + ctx->enemy[i].height*0.5) {
+				collision::DeleteEnemy(&ctx->enemyCount, &ctx->enemy, i);
+				ctx->score += ENEMY_SCORE;
 				i--;
 				continue;	
 			} else { 
-				PlayerDead(level, score,
-					   brick, brickCount,
-					   enemy, enemyCount,
-					   coin, coinCount,
-					   mario);
+				PlayerDead(ctx);
 			}
 		}
 	}
-	for(int i = 0; i < (*coinCount); i++) {
-		if(IsCollision((*mario), (*coin)[i])) {
-			collision::DeleteCoin(coinCount, coin, i);
-			(*score) += COIN_SCORE;
+	for(int i = 0; i < ctx->coinCount; i++) {
+		if(IsCollision(ctx->mario, ctx->coin[i])) {
+			collision::DeleteCoin(&ctx->coinCount, &ctx->coin, i);
+			ctx->score += COIN_SCORE;
 			i--;
 			continue;	
 		}
