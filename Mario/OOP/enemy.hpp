@@ -1,14 +1,15 @@
 #pragma once
 
-#include "entity.hpp"
+#include "dynamic_entity.hpp"
+#include "physics.hpp"
 
 namespace sea {
 	class Enemy : public DynamicEntity {
-		private:
-			float speed;
 		public:
-			Enemy(float x, float y, float width, float height, ObjectType type, float speed);
+			Enemy(float x, float y, float width, float height, 
+				EntityType type, float vx, float vy);
 
-			void update();
+			void die() override;
+			void update(sea::Level& level, sea::Physics& physics) override;
 	};
 }
