@@ -1,11 +1,12 @@
 #pragma once
 
-#include "game_object.hpp"
+#include "dynamic_entity.hpp"
+#include "level.hpp"
 
 namespace sea {
 	class Physics {
 		public:
-			void moveObjectHorizontal(sea::GameObject& obj);
-			void moveObjectVertical(sea::GameObject& obj);
+			bool moveHorizontal(sea::DynamicEntity& entity, sea::Level& level);
+			bool moveVertical(sea::DynamicEntity& entity, sea::Level& level);
 	};
 }
