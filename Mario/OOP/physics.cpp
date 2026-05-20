@@ -1,22 +1,43 @@
 #include "physics.hpp"
 
 #include "collision_handler.hpp"
+#include "config.hpp"
 
 using namespace sea;
 
 bool Physics::moveHorizontal(DynamicEntity& entity, Level& level) {
 	entity.setX(entity.getX() + entity.getVX());
+	
+	const Brick* bricks = level.getBricks();
+	int brickCount = level.getBrickCount();
 
-	for(const auto& brick : level.getBricks()) {
-		if(CollisionHandler::isCollision(entity, brick)) {
+	for(int i = 0; i < brickCount; i++) {
+		if(CollisionHandler::isHorizontalCollision(entity, bricks[i])) {
 			entity.setX(entity.getX() - entity.getVX());
-			return true;			
+			return true;
 		}
 	}
 
 	return false;
 }
 
-Physics::moveVerical(DynamicEntity& entity, Level& level) {
+void Physics::applyGravity(DynamicEntity& entity, Level& level) {
+	entity.setVY(entity.getVY() + Config::GRAVITY);
+}
+
+bool Physics::moveVertical(DynamicEntity& entity, Level& level) {
+	entity.setY(entity.getY() + entity.getVY());
+
+	const Brick* bricks = level.getBricks();
+	int brickCount = level.getBrickCount();
 	
+	for(int i = 0; i < brickCount; i++) {
+		if(CollisionHandler::isVerticalCollision(entity, bricks[i])) {
+			entity.setY(entity.getY() - entity.getVY());
+			entity.setVY(0);
+			return true; 
+		}
+	}
+
+	return false;
 }
