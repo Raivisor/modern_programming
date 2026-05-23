@@ -1,8 +1,11 @@
 #pragma once
 
 #include "dynamic_entity.hpp"
-#include "level.hpp"
-#include "physics.hpp"
+
+namespace sea {
+	class Level;
+	class Physics;
+}
 
 namespace sea {
 	class Mario : public DynamicEntity {
@@ -11,8 +14,8 @@ namespace sea {
 				EntityType type, float vx, float vy);
 			
 			void die() override;
-			void update(sea::Level& level, sea::Physics& physics) override;
-			void OnCollision(sea::Entity& other) override;
-			char getSymbol() override;
-	}
+			void update(Level& level, Physics& physics) override;
+			void onCollision(Entity& other) override;
+			char getSymbol() const override;
+	};
 }

@@ -123,6 +123,29 @@ Level& Level::operator=(Level&& other) noexcept {
     return *this;
 }
 
+void Level::setEnemies(Enemy* newEnemies, int count) {
+	delete[] enemies;
+	enemies = newEnemies;
+	enemyCount = count;
+}
+
+void Level::setCoins(Coin* newCoins, int count) {
+	delete[] coins;
+	coins = newCoins;
+	coinCount = count;
+}
+
+void Level::addCoin(const Coin& coin) {
+	Coin* newCoins = new Coin[coinCount + 1];
+	for (int i = 0; i < coinCount; ++i) {
+		newCoins[i] = coins[i];
+	}
+	newCoins[coinCount] = coin;
+	delete[] coins;
+	coins = newCoins;
+	++coinCount;
+}
+
 void Level::loadLevel(int level) {
     delete[] bricks;
     delete[] enemies;
@@ -131,63 +154,65 @@ void Level::loadLevel(int level) {
     enemies = nullptr;
     coins = nullptr;
 
-    if (level == 1) {
-        brickCount = level1BrickCount;
-        bricks = new Brick[brickCount];
-        for (int i = 0; i < brickCount; ++i) {
-            bricks[i] = Brick(level1Bricks[i].x, level1Bricks[i].y,
-                              level1Bricks[i].w, level1Bricks[i].h,
-                              level1Bricks[i].type);
-        }
-        enemyCount = 0;
-        enemies = nullptr;
-        coinCount = 0;
-        coins = nullptr;
-    }
-    else if (level == 2) {
-        brickCount = level2BrickCount;
-        bricks = new Brick[brickCount];
-        for (int i = 0; i < brickCount; ++i) {
-            bricks[i] = Brick(level2Bricks[i].x, level2Bricks[i].y,
-                              level2Bricks[i].w, level2Bricks[i].h,
-                              level2Bricks[i].type);
-        }
-        enemyCount = level2EnemyCount;
-        enemies = new Enemy[enemyCount];
-        for (int i = 0; i < enemyCount; ++i) {
-            enemies[i] = Enemy(level2Enemies[i].x, level2Enemies[i].y,
-                               level2Enemies[i].w, level2Enemies[i].h,
-                               level2Enemies[i].type,
-                               level2Enemies[i].speed, 0);
-        }
-        coinCount = 0;
-        coins = nullptr;
-    }
-    else if (level == 3) {
-        brickCount = level3BrickCount;
-        bricks = new Brick[brickCount];
-        for (int i = 0; i < brickCount; ++i) {
-            bricks[i] = Brick(level3Bricks[i].x, level3Bricks[i].y,
-                              level3Bricks[i].w, level3Bricks[i].h,
-                              level3Bricks[i].type);
-        }
-        enemyCount = level3EnemyCount;
-        enemies = new Enemy[enemyCount];
-        for (int i = 0; i < enemyCount; ++i) {
-            enemies[i] = Enemy(level3Enemies[i].x, level3Enemies[i].y,
-                               level3Enemies[i].w, level3Enemies[i].h,
-                               level3Enemies[i].type,
-                               level3Enemies[i].speed, 0);
-        }
-        coinCount = 0;
-        coins = nullptr;
-    }
-    else {
-        brickCount = 0;
-        bricks = nullptr;
-        enemyCount = 0;
-        enemies = nullptr;
-        coinCount = 0;
-        coins = nullptr;
+    switch(level) {
+	case 1:
+		brickCount = level1BrickCount;
+		bricks = new Brick[brickCount];
+		for (int i = 0; i < brickCount; ++i) {
+		    bricks[i] = Brick(level1Bricks[i].x, level1Bricks[i].y,
+				      level1Bricks[i].w, level1Bricks[i].h,
+				      level1Bricks[i].type);
+		}
+		enemyCount = 0;
+		enemies = nullptr;
+		coinCount = 0;
+		coins = nullptr;
+		break;
+	case 2:
+		brickCount = level2BrickCount;
+		bricks = new Brick[brickCount];
+		for (int i = 0; i < brickCount; ++i) {
+		    bricks[i] = Brick(level2Bricks[i].x, level2Bricks[i].y,
+				      level2Bricks[i].w, level2Bricks[i].h,
+				      level2Bricks[i].type);
+		}
+		enemyCount = level2EnemyCount;
+		enemies = new Enemy[enemyCount];
+		for (int i = 0; i < enemyCount; ++i) {
+		    enemies[i] = Enemy(level2Enemies[i].x, level2Enemies[i].y,
+				       level2Enemies[i].w, level2Enemies[i].h,
+				       level2Enemies[i].type,
+				       level2Enemies[i].speed, 0);
+		}
+		coinCount = 0;
+		coins = nullptr;
+		break;
+	case 3:
+		brickCount = level3BrickCount;
+		bricks = new Brick[brickCount];
+		for (int i = 0; i < brickCount; ++i) {
+		    bricks[i] = Brick(level3Bricks[i].x, level3Bricks[i].y,
+				      level3Bricks[i].w, level3Bricks[i].h,
+				      level3Bricks[i].type);
+		}
+		enemyCount = level3EnemyCount;
+		enemies = new Enemy[enemyCount];
+		for (int i = 0; i < enemyCount; ++i) {
+		    enemies[i] = Enemy(level3Enemies[i].x, level3Enemies[i].y,
+				       level3Enemies[i].w, level3Enemies[i].h,
+				       level3Enemies[i].type,
+				       level3Enemies[i].speed, 0);
+		}
+		coinCount = 0;
+		coins = nullptr;
+		break;
+	default:
+		brickCount = 0;
+		bricks = nullptr;
+		enemyCount = 0;
+		enemies = nullptr;
+		coinCount = 0;
+		coins = nullptr;
+		break;
     }
 }

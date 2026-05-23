@@ -5,8 +5,14 @@
 namespace sea {
 	class CollisionHandler {
 		public:
-			static bool isHorizontalCollision(const Entity& entity1, const Entity& entity2);
+			static bool isHorizontalCollision(const Entity& a, const Entity& b);
 
-			static bool isVerticalCollision(const Entity& entity1, const Entity& entity2);
-	}
+			static bool isVerticalCollision(const Entity& a, const Entity& b);
+
+			static bool isCollisionDoor(const Entity& a, const Entity& b);
+
+			static bool isCollisionQuestion(const Entity& a, const Entity& b);
+
+			static bool isCollision(const Entity& a, const Entity& b);
+	};
 }

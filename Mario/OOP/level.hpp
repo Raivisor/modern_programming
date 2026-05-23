@@ -34,6 +34,11 @@ namespace sea {
 			Coin* getCoins() { return coins; }
 			int getCoinCount() const {return coinCount; }
 
+			void setEnemies(sea::Enemy* newEnemies, int count);
+			void setCoins(sea::Coin* newCoins, int count);
+
+			void addCoin(const Coin& coin);
+
 			void loadLevel(int level);
-	}
+	};
 }

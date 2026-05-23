@@ -24,6 +24,6 @@ namespace sea {
 
 			int getDirection() const { return direction; }
 			bool isJump() const { return jump; }
-			bool isExit() const {return exit; }
+			bool isExit() const { return exit; }
 	};
 }

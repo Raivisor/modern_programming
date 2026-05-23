@@ -15,8 +15,8 @@ namespace sea {
 			~Render();
 
 			void clearMap();
-			void putEntityOnMap(sea::Entity& type);
+			void putEntityOnMap(const sea::Entity& type);
 			void putScoreOnMap(int score);
 			void refreshMap();
-	}
+	};
 }

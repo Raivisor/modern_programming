@@ -23,5 +23,6 @@ namespace sea {
 			void setPos(float newX, float newY);
 
 			virtual void onCollision(Entity& entity) {}
+			virtual char getSymbol() const = 0;
 	};
 }

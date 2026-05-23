@@ -3,40 +3,40 @@
 #include "key_code.hpp"
 
 #include <ncurses.h>
-#include <cmath.h>
+#include <cmath>
 
 using sea::InputManager;
 
 void InputManager::normalize() {
-	if(this->direction == 0) return;
+	if(direction == 0) return;
 
-	this->direction /= this->std::abs(direction);
+	direction /= std::abs(direction);
 }
 
 void InputManager::readKey() {
-	if(this->exit == true) return;
+	if(exit == true) return;
 
 	int ch = getch();
 	
 	switch(ch) {
 		case Key::A:
-			this->direction += 1;
+			direction -= 1;
 			break;
 		case Key::D:
-			this->direction -= 1;
+			direction += 1;
 			break;
 		case Key::SPACE:
-			this->jump = true;
+			jump = true;
 			break;
 		case Key::ESC:
-			this->exit = true;
-	 		this->jump = false;
-			this->direction = 0;
+			exit = true;
+	 		jump = false;
+			direction = 0;
 			break;
 		default:
-			this->jump = false;
+			jump = false;
 			break;	
 	}
 
-	this->normalize();
+	normalize();
 }

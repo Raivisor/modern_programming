@@ -1,11 +1,13 @@
 #include "mario.hpp"
 
-#include "input_manager.hpp"
+#include "brick.hpp"
+#include "coin.hpp"
 #include "config.hpp"
 #include "collision_handler.hpp"
-#include "brick.hpp"
 #include "enemy.hpp"
-#include "coin.hpp"
+#include "input_manager.hpp"
+#include "level.hpp"
+#include "physics.hpp"
 
 using namespace sea;
 
@@ -18,15 +20,22 @@ void Mario::die() {
 }
 
 void Mario::update(Level& level, Physics& physics) {
+	if(!isAlive) return;
+
+	if (getY() > Config::MAP_HEIGHT) die();
+
 	auto& input = InputManager::getInstance();
 	vx = Config::ABS_SPEED * input.getDirection();
 
-	if(input.isJump() && hasGround(level)) {
+	Mario copy = *this;
+	copy.setY(copy.getY() + 1);
+
+	if(input.isJump() && copy.hasGround(level)) {
 		vy = -Config::JUMP_FORCE;
 	}
 
-	physics.applyGravity(*this);
 	physics.moveHorizontal(*this, level);
+	physics.applyGravity(*this);
 	physics.moveVertical(*this, level);
 }
 
@@ -46,9 +55,6 @@ void Mario::onCollision(Entity& other) {
         case EntityType::COIN: {
             if (auto* coin = dynamic_cast<Coin*>(&other)) {
                 coin->die();
-                // Добавить очки (лучше через Game, можно через статический счётчик или событие)
-                // Предположим, есть глобальный счётчик или метод Game::addScore
-                // Game::getInstance().addScore(Config::COIN_SCORE);
             }
             break;
         }
@@ -57,6 +63,6 @@ void Mario::onCollision(Entity& other) {
     }
 }
 
-char Mario::getSymbol() {
+char Mario::getSymbol() const {
 	return Config::PLAYER_TYPE;
 }

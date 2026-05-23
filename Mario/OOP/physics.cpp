@@ -12,7 +12,7 @@ bool Physics::moveHorizontal(DynamicEntity& entity, Level& level) {
 	int brickCount = level.getBrickCount();
 
 	for(int i = 0; i < brickCount; i++) {
-		if(CollisionHandler::isHorizontalCollision(entity, bricks[i])) {
+		if(CollisionHandler::isCollision(entity, bricks[i])) {
 			entity.setX(entity.getX() - entity.getVX());
 			return true;
 		}
@@ -21,7 +21,7 @@ bool Physics::moveHorizontal(DynamicEntity& entity, Level& level) {
 	return false;
 }
 
-void Physics::applyGravity(DynamicEntity& entity, Level& level) {
+void Physics::applyGravity(DynamicEntity& entity) {
 	entity.setVY(entity.getVY() + Config::GRAVITY);
 }
 
@@ -32,7 +32,7 @@ bool Physics::moveVertical(DynamicEntity& entity, Level& level) {
 	int brickCount = level.getBrickCount();
 	
 	for(int i = 0; i < brickCount; i++) {
-		if(CollisionHandler::isVerticalCollision(entity, bricks[i])) {
+		if(CollisionHandler::isCollision(entity, bricks[i])) {
 			entity.setY(entity.getY() - entity.getVY());
 			entity.setVY(0);
 			return true; 

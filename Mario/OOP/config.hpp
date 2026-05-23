@@ -9,8 +9,9 @@ namespace sea {
 			static constexpr float ENEMY_SPEED = 0.3335f;
 			static constexpr float COIN_SPEED = 0.5f;
 			static constexpr float JUMP_FORCE = 1;
+			static constexpr float JUMP_ON_ENEMY_FORCE = 0.5f;
 			static constexpr float GRAVITY = 0.05;
-			static constexpr float COIN_JUMP_FORCE = -0.7f;
+			static constexpr float COIN_JUMP_FORCE = -0.4f;
 			static constexpr int MAX_LEVEL = 3;
 			static constexpr int COIN_SCORE = 100;
 			static constexpr int ENEMY_SCORE = 50;

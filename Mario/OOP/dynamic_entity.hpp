@@ -1,24 +1,33 @@
 #pragma once
 
 #include "entity.hpp"
-#include "entity_type.hpp"
+
+namespace sea {
+	class Level;
+	class Physics;
+}
 
 namespace sea {
 	class DynamicEntity : public Entity {
 		protected:
 			float vx, vy;
 			bool isAlive;
-		private:
-			DynamicEntity(float x, float y, float width, float height, EntityType type,
-					float vx, float vy);
+		public:
+			DynamicEntity(float x, float y, float width, float height, 
+					EntityType type, float vx, float vy);
 			virtual ~DynamicEntity() = default;
 
 			float getVX() const { return vx; }
 			float getVY() const { return vy; }
-			bool isAlive() const { return isAlive; }
+			bool getIsAlive() const { return isAlive; }
+			void setIsAlive(bool alive) { isAlive = alive; }
 
-			void die() { isAlive = false; }
+			void setVX(float newVX) { vx = newVX; }
+			void setVY(float newVY) { vy = newVY; }
 
-			virtual void update() = 0;
+			bool hasGround(sea::Level& level) const;
+
+			virtual void die() = 0;
+			virtual void update(Level& level, Physics& physics) = 0;
 	};
 }

@@ -4,10 +4,15 @@
 #include "level.hpp"
 
 namespace sea {
+	class DynamicEntity;
+	class Level;
+}
+
+namespace sea {
 	class Physics {
 		public:
-			bool moveHorizontal(sea::DynamicEntity& entity, sea::Level& level);
-			void applyGravity(sea::DynamicEntity& entity);
-			bool moveVertical(sea::DynamicEntity& entity, sea::Level& level);
+			bool moveHorizontal(DynamicEntity& entity, Level& level);
+			void applyGravity(DynamicEntity& entity);
+			bool moveVertical(DynamicEntity& entity, Level& level);
 	};
 }
